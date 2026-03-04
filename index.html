@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Kiosk - Doctors & Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #004987 0%, #002d5e 100%);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #004987;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+        }
+
+        .nav-link.active {
+            background: #004987;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+
+        .stats-badge {
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            font-weight: 500;
+        }
+
+        /* Doctors Page Styles */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .filter-btn.active {
+            background: #004987;
+            color: white;
+        }
+
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 6px 12px rgba(0, 73, 135, 0.4);
+        }
+
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .doctor-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .card-header {
+            background: #004987;
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .specialty-tag {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.3);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+        }
+
+        .doctor-name {
+            font-size: 1.8rem;
+            margin-bottom: 0.25rem;
+            font-weight: 700;
+        }
+
+        .doctor-initial {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .info-icon {
+            width: 24px;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .experience {
+            font-weight: 600;
+            color: #004987;
+        }
+
+        .languages {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .language-tag {
+            background: #f0f0f0;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .fee {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #004987;
+            margin: 1rem 0;
+        }
+
+        .schedule-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #004987;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .schedule-btn:hover {
+            background: #002d5e;
+        }
+
+        /* Modal for Schedule */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            font-size: 1.8rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .doctor-info-summary {
+            background: #004987;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .room-info {
+            background: #e8f4fd;
+            border-left: 4px solid #004987;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .room-info h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .room-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #004987;
+        }
+
+        .schedule-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .schedule-day {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #004987;
+        }
+
+        .day-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .day-status {
+            padding: 0.25rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-unavailable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .time-slots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .time-slot {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            border: 1px solid #004987;
+            color: #004987;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-slot:hover {
+            background: #004987;
+            color: white;
+        }
+
+        .time-slot.booked {
+            background: #f0f0f0;
+            color: #999;
+            border-color: #ddd;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        .time-slot.booked:hover {
+            background: #f0f0f0;
+            color: #999;
+        }
+
+        .no-results {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            padding: 3rem;
+            grid-column: 1 / -1;
+        }
+
+        /* Services Page Styles */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .service-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .service-doctors {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .service-doctors h4 {
+            color: #004987;
+            margin-bottom: 0.5rem;
+        }
+
+        .doctor-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .doctor-list li {
+            padding: 0.3rem 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .doctor-list li:before {
+            content: "👨‍⚕️";
+            font-size: 0.9rem;
+        }
+
+        .service-fee {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #004987;
+            margin: 1rem 0;
+        }
+
+        .service-btn {
+            background: #004987;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .service-btn:hover {
+            background: #002d5e;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Department List */
+        .departments-list {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .departments-list h2 {
+            color: #333;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .department-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .department-item:hover {
+            background: #f8f9fa;
+        }
+
+        .department-item:last-child {
+            border-bottom: none;
+        }
+
+        .dept-icon {
+            font-size: 2rem;
+            width: 60px;
+            text-align: center;
+        }
+
+        .dept-info {
+            flex: 1;
+        }
+
+        .dept-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .dept-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .dept-doctors {
+            color: #004987;
+            font-weight: 500;
+            margin-right: 2rem;
+        }
+
+        /* Hide/show pages */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: rgba(255,255,255,0.8);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">🏥 Medical Kiosk</div>
+            <div class="nav-links">
+                <a class="nav-link active" onclick="switchPage('doctors')">Doctors</a>
+                <a class="nav-link" onclick="switchPage('services')">Services</a>
+                <a class="nav-link" onclick="switchPage('appointments')">My Appointments</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Doctors Page -->
+    <div id="doctorsPage" class="page active">
+        <div class="container">
+            <div class="header">
+                <h1>Find Your Doctor</h1>
+                <p>Browse our experienced physicians and specialists. View their schedules and room locations.</p>
+                <span class="stats-badge" id="doctorCount">Loading doctors...</span>
+            </div>
+
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search by name, specialty, or language...">
+            </div>
+
+            <div class="filters" id="filterButtons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="Cardiology">Cardiology</button>
+                <button class="filter-btn" data-filter="Dermatology">Dermatology</button>
+                <button class="filter-btn" data-filter="Pediatrics">Pediatrics</button>
+                <button class="filter-btn" data-filter="Neurology">Neurology</button>
+                <button class="filter-btn" data-filter="Orthopedics">Orthopedics</button>
+            </div>
+
+            <div class="doctors-grid" id="doctorsGrid"></div>
+        </div>
+    </div>
+
+    <!-- Services Page -->
+    <div id="servicesPage" class="page">
+        <div class="container">
+            <div class="header">
+                <h1>Our Medical Services</h1>
+                <p>Comprehensive healthcare services tailored to your needs</p>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="stat-item">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Medical Specialties</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Expert Doctors</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">10k+</div>
+                    <div class="stat-label">Happy Patients</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Emergency Care</div>
+                </div>
+            </div>
+
+            <!-- Services Grid -->
+            <div class="services-grid" id="servicesGrid"></div>
+
+            <!-- Departments List -->
+            <div class="departments-list">
+                <h2>All Departments</h2>
+                <div id="departmentsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments Page -->
+    <div id="appointmentsPage" class="page">
+        <div class="container">
+            <div class="header">
+                <h1>My Appointments</h1>
+                <p>View and manage your scheduled appointments</p>
+            </div>
+            <div style="background: white; border-radius: 20px; padding: 3rem; text-align: center;">
+                <h2 style="color: #333; margin-bottom: 1rem;">📅 No Appointments Scheduled</h2>
+                <p style="color: #666; margin-bottom: 2rem;">View doctor schedules to plan your visit.</p>
+                <button class="service-btn" onclick="switchPage('doctors')">View Doctors</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div class="modal" id="scheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalDoctorName">Doctor's Schedule</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="scheduleContent"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 Medical Kiosk System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Doctor Database with room numbers and schedules
+        const doctors = [
+            {
+                id: 1,
+                name: "Dr. Sarah Johnson",
+                initial: "S",
+                specialty: "Cardiology",
+                experience: "15 years experience",
+                education: "Harvard Medical School",
+                languages: ["English", "Spanish"],
+                fee: 150,
+                room: "Room 301 - Cardiology Wing",
+                bio: "Board-certified cardiologist with expertise in preventive cardiology and heart disease management.",
+                schedule: [
+                    { day: "Monday", status: "available", hours: "9:00 AM - 5:00 PM", slots: ["9:00", "10:00", "11:00", "14:00", "15:00", "16:00"] },
+                    { day: "Wednesday", status: "available", hours: "9:00 AM - 5:00 PM", slots: ["9:00", "10:00", "11:00", "14:00", "15:00", "16:00"] },
+                    { day: "Friday", status: "available", hours: "9:00 AM - 5:00 PM", slots: ["9:00", "10:00", "11:00", "14:00", "15:00", "16:00"] },
+                    { day: "Tuesday", status: "unavailable", hours: "Day Off", slots: [] },
+                    { day: "Thursday", status: "unavailable", hours: "Day Off", slots: [] }
+                ]
+            },
+            {
+                id: 2,
+                name: "Dr. Michael Chen",
+                initial: "M",
+                specialty: "Dermatology",
+                experience: "12 years experience",
+                education: "Johns Hopkins University",
+                languages: ["English", "Mandarin"],
+                fee: 120,
+                room: "Room 205 - Dermatology Suite",
+                bio: "Specializing in medical and cosmetic dermatology with a focus on skin cancer prevention.",
+                schedule: [
+                    { day: "Tuesday", status: "available", hours: "10:00 AM - 6:00 PM", slots: ["10:00", "11:00", "14:00", "15:00", "16:00", "17:00"] },
+                    { day: "Thursday", status: "available", hours: "10:00 AM - 6:00 PM", slots: ["10:00", "11:00", "14:00", "15:00", "16:00", "17:00"] },
+                    { day: "Saturday", status: "available", hours: "9:00 AM - 2:00 PM", slots: ["9:00", "10:00", "11:00", "13:00"] },
+                    { day: "Monday", status: "unavailable", hours: "Day Off", slots: [] },
+                    { day: "Wednesday", status: "unavailable", hours: "Day Off", slots: [] },
+                    { day: "Friday", status: "unavailable", hours: "Day Off", slots: [] }
+                ]
+            },
+            {
+                id: 3,
+                name: "Dr. Emily Rodriguez",
+                initial: "E",
+                specialty: "Pediatrics",
+                experience: "10 years experience",
+                education: "Stanford University",
+                languages: ["English", "Spanish", "Portuguese"],
+                fee: 100,
+                room: "Room 102 - Children's Clinic",
+                bio: "Compassionate pediatrician dedicated to providing comprehensive care for children of all ages.",
+                schedule: [
+                    { day: "Monday", status: "available", hours: "8:00 AM - 4:00 PM", slots: ["8:00", "9:00", "10:00", "11:00", "14:00", "15:00"] },
+                    { day: "Tuesday", status: "available", hours: "8:00 AM - 4:00 PM", slots: ["8:00", "9:00", "10:00", "11:00", "14:00", "15:00"] },
+                    { day: "Thursday", status: "available", hours: "8:00 AM - 4:00 PM", slots: ["8:00", "9:00", "10:00", "11:00", "14:00", "15:00"] },
+                    { day: "Friday", status: "available", hours: "8:00 AM - 12:00 PM", slots: ["8:00", "9:00", "10:00", "11:00"] },
+                    { day: "Wednesday", status: "unavailable", hours: "Day Off", slots: [] }
+                ]
+            },
+            {
+                id: 4,
+                name: "Dr. James Wilson",
+                initial: "J",
+                specialty: "Neurology",
+                experience: "18 years experience",
+                education: "Yale School of Medicine",
+                languages: ["English", "French"],
+                fee: 200,
+                room: "Room 401 - Neurology Center",
+                bio: "Expert neurologist specializing in headache disorders and multiple sclerosis treatment.",
+                schedule: [
+                    { day: "Wednesday", status: "available", hours: "9:00 AM - 5:00 PM", slots: ["9:00", "10:00", "11:00", "14:00", "15:00", "16:00"] },
+                    { day: "Thursday", status: "available", hours: "9:00 AM - 5:00 PM", slots: ["9:00", "10:00", "11:00", "14:00", "15:00", "16:00"] },
+                    { day: "Friday", status: "available", hours: "9:00 AM - 5:00 PM", slots: ["9:00", "10:00", "11:00", "14:00", "15:00", "16:00"] },
+                    { day: "Monday", status: "unavailable", hours: "Day Off", slots: [] },
+                    { day: "Tuesday", status: "unavailable", hours: "Day Off", slots: [] }
+                ]
+            },
+            {
+                id: 5,
+                name: "Dr. Lisa Thompson",
+                initial: "L",
+                specialty: "Orthopedics",
+                experience: "14 years experience",
+                education: "Mayo Clinic Medical School",
+                languages: ["English", "German"],
+                fee: 175,
+                room: "Room 201 - Orthopedic Suite",
+                bio: "Orthopedic surgeon focused on sports medicine and minimally invasive joint procedures.",
+                schedule: [
+                    { day: "Monday", status: "available", hours: "7:00 AM - 3:00 PM", slots: ["7:00", "8:00", "9:00", "10:00", "11:00", "14:00"] },
+                    { day: "Tuesday", status: "available", hours: "7:00 AM - 3:00 PM", slots: ["7:00", "8:00", "9:00", "10:00", "11:00", "14:00"] },
+                    { day: "Wednesday", status: "available", hours: "7:00 AM - 3:00 PM", slots: ["7:00", "8:00", "9:00", "10:00", "11:00", "14:00"] },
+                    { day: "Thursday", status: "available", hours: "7:00 AM - 11:00 AM", slots: ["7:00", "8:00", "9:00", "10:00"] },
+                    { day: "Friday", status: "unavailable", hours: "Day Off", slots: [] }
+                ]
+            }
+        ];
+
+        // Services Database
+        const services = [
+            {
+                id: 1,
+                name: "Cardiology",
+                icon: "❤️",
+                description: "Comprehensive heart care including diagnosis, treatment, and prevention of cardiovascular diseases.",
+                doctors: ["Dr. Sarah Johnson", "Dr. Robert Martinez"],
+                feeRange: "$150 - $250",
+                features: ["ECG Testing", "Echocardiography", "Stress Testing", "Cardiac CT"]
+            },
+            {
+                id: 2,
+                name: "Dermatology",
+                icon: "🔬",
+                description: "Expert skin care for medical and cosmetic concerns, from acne to skin cancer screening.",
+                doctors: ["Dr. Michael Chen", "Dr. Amanda Lee"],
+                feeRange: "$120 - $200",
+                features: ["Skin Cancer Screening", "Acne Treatment", "Cosmetic Procedures", "Mohs Surgery"]
+            },
+            {
+                id: 3,
+                name: "Pediatrics",
+                icon: "👶",
+                description: "Comprehensive healthcare for children from infancy through adolescence.",
+                doctors: ["Dr. Emily Rodriguez", "Dr. David Kim"],
+                feeRange: "$100 - $180",
+                features: ["Well-Child Visits", "Vaccinations", "Developmental Screening", "School Physicals"]
+            },
+            {
+                id: 4,
+                name: "Neurology",
+                icon: "🧠",
+                description: "Advanced diagnosis and treatment of disorders affecting the brain and nervous system.",
+                doctors: ["Dr. James Wilson", "Dr. Maria Garcia"],
+                feeRange: "$200 - $350",
+                features: ["EEG", "EMG", "Migraine Treatment", "Movement Disorders"]
+            },
+            {
+                id: 5,
+                name: "Orthopedics",
+                icon: "🦴",
+                description: "Specialized care for musculoskeletal conditions, injuries, and sports medicine.",
+                doctors: ["Dr. Lisa Thompson", "Dr. John Miller"],
+                feeRange: "$175 - $300",
+                features: ["Joint Replacement", "Sports Medicine", "Fracture Care", "Arthroscopy"]
+            }
+        ];
+
+        let currentFilter = 'all';
+        let currentSearch = '';
+
+        // Page switching function
+        function switchPage(page) {
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update pages
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active');
+            });
+            document.getElementById(page + 'Page').classList.add('active');
+
+            // Refresh content if needed
+            if (page === 'doctors') {
+                displayDoctors();
+            } else if (page === 'services') {
+                displayServices();
+            }
+        }
+
+        // Display doctors
+        function displayDoctors() {
+            const grid = document.getElementById('doctorsGrid');
+            const filteredDoctors = filterDoctors();
+            
+            document.getElementById('doctorCount').textContent = `${filteredDoctors.length} doctors found`;
+
+            if (filteredDoctors.length === 0) {
+                grid.innerHTML = '<div class="no-results">No doctors match your criteria. Try adjusting your filters.</div>';
+                return;
+            }
+
+            grid.innerHTML = filteredDoctors.map(doctor => `
+                <div class="doctor-card">
+                    <div class="card-header">
+                        <div class="specialty-tag">${doctor.specialty}</div>
+                        <div class="doctor-initial">${doctor.initial}</div>
+                        <div class="doctor-name">${doctor.name}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-item">
+                            <span class="info-icon">📋</span>
+                            <span>${doctor.bio}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">⏳</span>
+                            <span class="experience">${doctor.experience}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">🎓</span>
+                            <span>${doctor.education}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">🏥</span>
+                            <span><strong>${doctor.room}</strong></span>
+                        </div>
+                        <div class="languages">
+                            ${doctor.languages.map(lang => `<span class="language-tag">${lang}</span>`).join('')}
+                        </div>
+                        <div class="fee">$${doctor.fee}/visit</div>
+                        <button class="schedule-btn" onclick="viewSchedule(${doctor.id})">
+                            <span>📅</span> View Schedule & Room
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter doctors based on specialty and search
+        function filterDoctors() {
+            return doctors.filter(doctor => {
+                // Filter by specialty
+                const matchesFilter = currentFilter === 'all' || doctor.specialty === currentFilter;
+                
+                // Filter by search
+                const searchLower = currentSearch.toLowerCase();
+                const matchesSearch = 
+                    doctor.name.toLowerCase().includes(searchLower) ||
+                    doctor.specialty.toLowerCase().includes(searchLower) ||
+                    doctor.languages.some(lang => lang.toLowerCase().includes(searchLower)) ||
+                    doctor.bio.toLowerCase().includes(searchLower) ||
+                    doctor.room.toLowerCase().includes(searchLower);
+                
+                return matchesFilter && matchesSearch;
+            });
+        }
+
+        // Handle filter button clicks
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                displayDoctors();
+            });
+        });
+
+        // Handle search input
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            currentSearch = e.target.value;
+            displayDoctors();
+        });
+
+        // View schedule function
+        function viewSchedule(doctorId) {
+            const doctor = doctors.find(d => d.id === doctorId);
+            const modal = document.getElementById('scheduleModal');
+            const scheduleContent = document.getElementById('scheduleContent');
+            
+            document.getElementById('modalDoctorName').textContent = `${doctor.name}'s Schedule`;
+            
+            // Generate schedule HTML
+            const scheduleHTML = `
+                <div class="doctor-info-summary">
+                    <h3>${doctor.name}</h3>
+                    <p>${doctor.specialty}</p>
+                </div>
+                
+                <div class="room-info">
+                    <h3>📍 Current Location</h3>
+                    <p class="room-number">${doctor.room}</p>
+                    <p style="color: #666; margin-top: 0.5rem;">This is where you can find the doctor during available hours.</p>
+                </div>
+                
+                <h3 style="margin-bottom: 1rem; color: #333;">Weekly Schedule</h3>
+                
+                <div class="schedule-grid">
+                    ${doctor.schedule.map(day => `
+                        <div class="schedule-day">
+                            <div class="day-header">
+                                <span class="day-name">${day.day}</span>
+                                <span class="day-status ${day.status === 'available' ? 'status-available' : 'status-unavailable'}">
+                                    ${day.status === 'available' ? '✓ Available' : '✗ Day Off'}
+                                </span>
+                            </div>
+                            <div style="color: #666; margin-bottom: 0.5rem;">
+                                <strong>Hours:</strong> ${day.hours}
+                            </div>
+                            ${day.slots.length > 0 ? `
+                                <div>
+                                    <strong style="color: #333;">Available Time Slots:</strong>
+                                    <div class="time-slots">
+                                        ${day.slots.map(slot => {
+                                            // Randomly mark some slots as booked for demo
+                                            const isBooked = Math.random() > 0.7;
+                                            return `<span class="time-slot ${isBooked ? 'booked' : ''}" 
+                                                      ${!isBooked ? 'onclick="alert(\'Time slot selected: ' + slot + ' on ' + day.day + '\')"' : ''}>
+                                                        ${slot} ${isBooked ? '📌' : ''}
+                                                    </span>`;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-radius: 10px;">
+                    <p style="color: #666; font-size: 0.9rem;">
+                        <strong>📌 Note:</strong> Click on any available time slot to check availability. 
+                        Booked slots are marked with 📌 and cannot be selected.
+                    </p>
+                </div>
+            `;
+            
+            scheduleContent.innerHTML = scheduleHTML;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('scheduleModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('scheduleModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // Display services
+        function displayServices() {
+            const servicesGrid = document.getElementById('servicesGrid');
+            servicesGrid.innerHTML = services.map(service => `
+                <div class="service-card">
+                    <div class="service-icon">${service.icon}</div>
+                    <h3 class="service-title">${service.name}</h3>
+                    <p class="service-description">${service.description}</p>
+                    <div class="service-doctors">
+                        <h4>Our Specialists:</h4>
+                        <ul class="doctor-list">
+                            ${service.doctors.map(doc => `<li>${doc}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="service-fee">${service.feeRange}</div>
+                    <button class="service-btn" onclick="viewServiceDoctors('${service.name}')">View Doctors</button>
+                </div>
+            `).join('');
+
+            // Display departments list
+            const departmentsList = document.getElementById('departmentsList');
+            departmentsList.innerHTML = services.map(service => {
+                const doctorCount = service.doctors.length;
+                return `
+                    <div class="department-item" onclick="filterBySpecialty('${service.name}')">
+                        <div class="dept-icon">${service.icon}</div>
+                        <div class="dept-info">
+                            <div class="dept-name">${service.name}</div>
+                            <div class="dept-desc">${service.description.substring(0, 60)}...</div>
+                        </div>
+                        <div class="dept-doctors">${doctorCount} doctor${doctorCount > 1 ? 's' : ''}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // View doctors by service
+        function viewServiceDoctors(specialty) {
+            switchPage('doctors');
+            // Trigger filter for that specialty
+            const filterBtn = Array.from(document.querySelectorAll('.filter-btn')).find(
+                btn => btn.dataset.filter === specialty
+            );
+            if (filterBtn) {
+                filterBtn.click();
+            }
+        }
+
+        // Filter by specialty from departments list
+        function filterBySpecialty(specialty) {
+            viewServiceDoctors(specialty);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            displayDoctors();
+            displayServices();
+
+            // Set initial active nav link
+            document.querySelectorAll('.nav-link')[0].classList.add('active');
+        });
+    </script>
+</body>
+</html>
